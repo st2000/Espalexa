@@ -44,8 +44,8 @@ boolean connectWifi();
 void lutronChanged(uint8_t brightness);
 
 // Change this!!  rbf!!
-const char* ssid = "<ssid>";
-const char* password = "<password>";
+const char* ssid = "...";
+const char* password = "wifipassword";
 
 boolean wifiConnected = false;
 
