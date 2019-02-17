@@ -4,12 +4,14 @@ Now compatible with both ESP8266 and ESP32!
 
 #### What does this do similar projects like Fauxmo don't already?
 
-It allows you to set a ranged value (e.g. Brightness) additionally to standard on/off control.
-You can say "Alexa, turn the light to 75%".
-If you just need On/Off (eg. for a relay) I'd recommend [arduino-esp8266-alexa-wemo-switch](https://github.com/kakopappa/arduino-esp8266-alexa-wemo-switch) instead.
+It allows you to set a ranged value (e.g. Brightness, Temperature) additionally to standard on/off control.
+For example, you can say "Alexa, turn the light to 75% / 21 degrees".  
+Alexa now finally supports colors with the local API! You can see how to add color devices in the EspalexaColor example.  
+Then, you can say "Alexa, turn the light to Blue". Color temperature (white shades) is also supported, but still a WIP.
 
-Additionally, it's possible to add up to a total of 20 devices.
+By default, it's possible to add up to a total of 10 devices (read below on how to increase the cap).  
 Each device has a brightness range from 0 to 255, where 0 is off and 255 is fully on.
+You can get a percentage from that value using `espalexa.toPercent(brightness);`
 
 #### How do I install the library?
 
@@ -80,15 +82,16 @@ Espalexa uses an internal WebServer. You can got to `http://[yourEspIP]/espalexa
 
 #### My devices are not found?!
 
-Confirm your ESP is connected. Go to the /espalexa subpage to confirm all your devices are defined.
-Check your router configuration. Espalexa might need to have UPnP enabled for discovery to work.
-Then ask Alexa to discover devices again or try it via the Alexa app.
-If nothing helps, open a Github issue and we will help.
+Confirm your ESP is connected. Go to the /espalexa subpage to confirm all your devices are defined.  
+Check your router configuration. Espalexa might need to have UPnP enabled for discovery to work.  
+Then ask Alexa to discover devices again or try it via the Alexa app.  
+If nothing helps, open a Github issue and we will help.  
+If you can, add `#define ESPALEXA_DEBUG` before `#include <Espalexa.h>` and include the serial monitor output that is printed while the issue occurs.  
 
 #### The devices are found but I can't control them! They are always on!
 
-Please try using ESP8266 Arduino core version 2.3.0.
-If you have to use 2.4.0, see this [workaround](https://github.com/Aircoookie/Espalexa/issues/6#issuecomment-366533897).
+Please try using ESP8266 Arduino core version 2.3.0 or 2.5.0.
+If you have to use 2.4.x, see this [workaround](https://github.com/Aircoookie/Espalexa/issues/6#issuecomment-366533897) or use the async server (below).
 
 #### I tried to use this in my sketch that already uses an ESP8266WebServer, it doesn't work!
 
@@ -107,6 +110,18 @@ server.onNotFound([](){
 	}
 });
 ```
+
+#### Does this library work with ESPAsyncWebServer?
+
+Yes! In v2.3.0 you can use the library asyncronously by adding `#define ESPALEXA_ASYNC` before `#include <Espalexa.h>`  
+See the  `EspalexaWithAsyncWebServer` example.  
+`ESPAsyncWebServer` and its dependencies must be manually installed.  
+
+#### Why only 10 virtual devices?
+
+Each device "slot" occupies memory, even if no device is initialized.  
+You can change the maximum number of devices by adding `#define ESPALEXA_MAXDEVICES 20` (for example) before `#include <Espalexa.h>`  
+I recommend setting MAXDEVICES to the exact number of devices you want to add to optimize memory usage.
 
 #### How does this work?
 
